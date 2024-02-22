@@ -1,8 +1,6 @@
 from typing import List
 import pandas as pd
 
-from Preprocessing.data_manipulation import prepare_data_for_decision_tree
-
 
 def merge_selected_columns_from_dfs(df1: pd.DataFrame, df2: pd.DataFrame, columns_to_merge: List[str]) -> pd.DataFrame:
     """
@@ -36,12 +34,3 @@ def merge_selected_columns_from_dfs(df1: pd.DataFrame, df2: pd.DataFrame, column
     merged_df = pd.merge(df1, df2_renamed, on=['cyclist_id', 'year', 'month', 'day'], how='inner')
 
     return merged_df
-
-# Example usage:
-
-    # Agg_Workouts_2023_df = prepare_data_for_decision_tree("Agg_Workouts_2023.csv")
-    # riderInjuries_df = prepare_data_for_decision_tree("RiderInjuries.csv")
-    #
-    #
-    # # Merge the 'injury' column from riderInjuries_df into Agg_Workouts_2023_df
-    # merged_df = merge_selected_columns_from_dfs(Agg_Workouts_2023_df, riderInjuries_df, ['disrupt'])
