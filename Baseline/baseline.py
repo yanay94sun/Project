@@ -1,4 +1,4 @@
-from Preprocessing import data_manipulation, data_formatting_for_model, agg_workout_pp
+from Preprocessing import data_manipulation, data_formatting_for_model, agg_workout_pp, adding_labels
 
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
@@ -13,10 +13,10 @@ def evaluate_model(classifier: DecisionTreeClassifier, X_test: pd.DataFrame, y_t
 
 
 def create_model(df: pd.DataFrame):
-    feature_cols = []
-    label_col = []
+    feature_cols = df.columns[:-1]
+    label_col = [df.columns[-1]]
     X = df[feature_cols]
-    y = df[label_col]
+    y = df[label_col[0]]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
                                                         random_state=1)  # 70% training and 30% test
@@ -29,6 +29,16 @@ def create_model(df: pd.DataFrame):
 
 
 if __name__ == '__main__':
-    data_formatting_for_model.create_data_frame_for_model(window_size_x=3, window_size_y=1, )
-    create_model()
+    df1 = data_manipulation.prepare_data_for_decision_tree(r"C:\Users\t-asafstern\Desktop\Studies\StudiesProjext\Confidential\Confidential\Agg_Workouts_2023.csv")
+    df2 = data_manipulation.prepare_data_for_decision_tree(r"C:\Users\t-asafstern\Desktop\Studies\StudiesProjext\Confidential\Confidential\riderIllnesses.csv")
+    df_merged = adding_labels.merge_selected_columns_from_dfs(df1, df2, ["disrupt"])
+    # df_merged['date'] = f"{df_merged['year']}-{df_merged['month']}-{df_merged['day']}"
+    df_merged['date'] = pd.to_datetime(df_merged[['year', 'month', 'day']])
+    time_series_df = data_formatting_for_model.create_data_frame_for_model(
+        df_merged,
+        window_size_x=3,
+        window_size_y=1,
+        target_label_column_name="disrupt")
+    time_series_df = time_series_df.dropna()
+    create_model(time_series_df)
 
