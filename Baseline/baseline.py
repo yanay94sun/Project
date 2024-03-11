@@ -22,7 +22,7 @@ def evaluate_and_visualize_model(classifier: DecisionTreeClassifier, X_test: pd.
 
 def filter_relevant_cols_for_model(df: pd.DataFrame):
     feature_cols = df.columns[:-1]  # removing the label column
-    remove_keys = ["date", "day", "year", "month", "_id"]
+    remove_keys = ["date", "day", "year", "month", "workout_week", "workout_title", "workout_type", "tss_cal", "_id"]
     feature_cols = list(filter(lambda col: not any([key in col for key in remove_keys]), feature_cols))
     return feature_cols, [df.columns[-1]]
 
@@ -35,8 +35,8 @@ def create_model(df: pd.DataFrame):
     X = df[feature_cols]
     y = df[label_cols]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
-                                                        random_state=1)  # 70% training and 30% test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=1)  # 90% training and 10% test
 
     clf = DecisionTreeClassifier(max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None)
 
