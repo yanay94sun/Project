@@ -35,10 +35,10 @@ def create_model(df: pd.DataFrame):
     X = df[feature_cols]
     y = df[label_cols]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4,
                                                         random_state=1)  # 90% training and 10% test
 
-    clf = DecisionTreeClassifier(max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None)
+    clf = DecisionTreeClassifier(max_depth=3, min_samples_split=2, min_samples_leaf=1, max_features=None)
 
     # Train Decision Tree Classifier
     clf = clf.fit(X_train, y_train)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     df_merged['date'] = pd.to_datetime(df_merged[['year', 'month', 'day']])
     time_series_df = data_formatting_for_model.create_data_frame_for_model(
         df_merged,
-        window_size_x=3,
+        window_size_x=2,
         window_size_y=1,
         target_label_column_name="disrupt")
     time_series_df = time_series_df.dropna()
