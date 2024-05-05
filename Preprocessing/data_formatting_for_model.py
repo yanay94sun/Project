@@ -4,8 +4,8 @@ import datetime as dt
 
 from typing import Generator, List
 
-
-DATE_FORMAT = '%m/%d/%Y'
+DATE_FORMAT = '%Y/%m/%d'
+# DATE_FORMAT = '%m/%d/%Y'
 
 
 def create_new_empty_df_suitable(original_df: pd.DataFrame, window_size_x: int, window_size_y: int) -> pd.DataFrame:
@@ -26,27 +26,32 @@ def create_new_empty_df_suitable(original_df: pd.DataFrame, window_size_x: int, 
     return pd.DataFrame(columns=columns)
 
 
+# def generate_riders_date_consistent_data_chunks(df: pd.DataFrame) -> Generator[pd.DataFrame, List[str], None]:
+#     """
+#     Generate filtered chunks of dataframes, that is fit for entries merge.
+#
+#     Parameters:
+#     df (pandas.DataFrame): Old DataFrame contains all the data.
+#     """
+#
+#     for rider in df["cyclist_id"].unique():
+#         rider_df = df[df["cyclist_id"] == rider].sort_values(by='date')
+#         unique_dates = rider_df["date"].unique()
+#         unique_dates = [dt.datetime.strftime(date, DATE_FORMAT) for date in unique_dates]
+#
+#         sd_adapter = lambda str_date: dt.datetime.strptime(str_date, DATE_FORMAT)
+#         last_start_index = 0
+#         for i in range(len(unique_dates) - 1):
+#             if sd_adapter(unique_dates[i]) != sd_adapter(unique_dates[i + 1]) - dt.timedelta(days=1):
+#                 yield rider_df.iloc[last_start_index:i + 1], unique_dates[last_start_index:i + 1]
+#                 last_start_index = i + 1
+#         if last_start_index < len(unique_dates) - 1:
+#             yield rider_df.iloc[last_start_index:], unique_dates[last_start_index:]
+
 def generate_riders_date_consistent_data_chunks(df: pd.DataFrame) -> Generator[pd.DataFrame, List[str], None]:
-    """
-    Generate filtered chunks of dataframes, that is fit for entries merge.
-
-    Parameters:
-    df (pandas.DataFrame): Old DataFrame contains all the data.
-    """
-
-    for rider in df["cyclist_id"].unique():
-        rider_df = df[df["cyclist_id"] == rider].sort_values(by='date')
-        unique_dates = rider_df["date"].unique()
-        unique_dates = [dt.datetime.strftime(date, DATE_FORMAT) for date in unique_dates]
-
-        sd_adapter = lambda str_date: dt.datetime.strptime(str_date, DATE_FORMAT)
-        last_start_index = 0
-        for i in range(len(unique_dates) - 1):
-            if sd_adapter(unique_dates[i]) != sd_adapter(unique_dates[i + 1]) - dt.timedelta(days=1):
-                yield rider_df.iloc[last_start_index:i + 1], unique_dates[last_start_index:i + 1]
-                last_start_index = i + 1
-        if last_start_index < len(unique_dates) - 1:
-            yield rider_df.iloc[last_start_index:], unique_dates[last_start_index:]
+    for rider in df['cyclist_id'].unique():
+        rider_df = df[df['cyclist_id'] == rider]
+        yield rider_df, rider_df['date']
 
 
 def create_data_frame_for_model(df: pd.DataFrame,

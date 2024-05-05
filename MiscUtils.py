@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def load_data(file_path: Path) -> pd.DataFrame:
+def load_data(file_path: Path | str) -> pd.DataFrame:
     """
     Load the data from the specified file path.
 
