@@ -26,7 +26,7 @@ def create_new_empty_df_suitable(original_df: pd.DataFrame, window_size_x: int, 
     return pd.DataFrame(columns=columns)
 
 
-def generate_riders_date_consistent_data_chunks(df: pd.DataFrame) -> Generator[pd.DataFrame, List[str]]:
+def generate_riders_date_consistent_data_chunks(df: pd.DataFrame) -> Generator[pd.DataFrame, List[str], None]:
     """
     Generate filtered chunks of dataframes, that is fit for entries merge.
 
@@ -34,9 +34,10 @@ def generate_riders_date_consistent_data_chunks(df: pd.DataFrame) -> Generator[p
     df (pandas.DataFrame): Old DataFrame contains all the data.
     """
 
-    for rider in df["rider"].unique():
-        rider_df = df[df["rider"] == rider].sort_values(by='date')
+    for rider in df["cyclist_id"].unique():
+        rider_df = df[df["cyclist_id"] == rider].sort_values(by='date')
         unique_dates = rider_df["date"].unique()
+        unique_dates = [dt.datetime.strftime(date, DATE_FORMAT) for date in unique_dates]
 
         sd_adapter = lambda str_date: dt.datetime.strptime(str_date, DATE_FORMAT)
         last_start_index = 0
@@ -64,7 +65,10 @@ def create_data_frame_for_model(df: pd.DataFrame,
     Returns:
     pandas.DataFrame: A DataFrame that is ready to be inserted into the model.
     """
-
+    columns = list(df.columns)
+    target_column_index = list.index(columns, target_label_column_name)
+    columns[-1], columns[target_column_index] = columns[target_column_index], columns[-1]
+    df = df[columns]
     new_df = create_new_empty_df_suitable(df, window_size_x, window_size_y)
     for rider_df, unique_dates in generate_riders_date_consistent_data_chunks(df):
         last_first_day_index = len(unique_dates) - window_size_x - window_size_y + 1
