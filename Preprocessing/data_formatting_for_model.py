@@ -21,8 +21,8 @@ def create_new_empty_df_suitable(original_df: pd.DataFrame, window_size_x: int, 
     pandas.DataFrame: A new empty DF that is ready to contain several entries of the old DF as a single entry.
     """
 
-    columns = [col + str(i + 1) for i in range(window_size_x) for col in original_df.columns][:-1] + \
-              [f"label{i}" for i in range(window_size_y)]  # -1 in X for the last label which is included in the Y
+    columns = [col + str(i + 1) for i in range(window_size_x) for col in original_df.columns] + \
+              [f"label{''.join([str(i) for i in range(window_size_x + 1, window_size_x + window_size_y + 1)])}"]  # -1 in X for the last label which is included in the Y
     return pd.DataFrame(columns=columns)
 
 
@@ -76,16 +76,16 @@ def create_data_frame_for_model(df: pd.DataFrame,
     df = df[columns]
     new_df = create_new_empty_df_suitable(df, window_size_x, window_size_y)
     for rider_df, unique_dates in generate_riders_date_consistent_data_chunks(df):
-        last_first_day_index = len(unique_dates) - window_size_x - window_size_y + 1
+        last_first_day_index = len(unique_dates) - window_size_x - window_size_y
         for i, start_date in enumerate(unique_dates):
             if i > last_first_day_index:
                 break
             window_x = rider_df.iloc[i:i + window_size_x].values
-            window_y = rider_df[target_label_column_name].iloc[
-                       i + window_size_x - 1:i + window_size_x + window_size_y - 1].values
+            window_y = np.array([np.max(rider_df[target_label_column_name].iloc[
+                       i + window_size_x:i + window_size_x + window_size_y].values)])
 
-            x = window_x.reshape(len(new_df.columns) - window_size_y + 1)[:-1]
-            y = window_y.reshape(window_size_y)
+            x = window_x.reshape(len(new_df.columns) - 1)
+            y = window_y
 
             new_df.loc[len(new_df)] = np.concatenate((x, y), axis=0)
 

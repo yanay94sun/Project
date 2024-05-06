@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -96,20 +99,33 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     df1 = load_data(rf"{prog_dir}/Data/Cleaned_Agg_Workouts_2023.csv")
-    df2 = load_data(rf"{prog_dir}/Data/Cleaned_riderIllnesses.csv")
+    df2 = load_data(rf"{prog_dir}/Data/Cleaned_riderInjuries.csv")
     df_merged = adding_labels.merge_selected_columns_from_dfs(df1, df2, ["disrupt"])
     args = parse_args()
-    print(args)
+    # print(args)
     wx = args.wx
     wy = args.wy
     classifier = args.c
-    print(f"chosen arguments are:"
-          f"window x: {wx}"
-          f"window y: {wy}"
-          f"classifier: {classifier}")
-    time_series_df = data_formatting_for_model.create_data_frame_for_model(
-        df_merged,
-        window_size_x=wx,
-        window_size_y=wy,
-        target_label_column_name="disrupt")
-    dtc = create_model(time_series_df, classifier=classifier)
+    # print(f"chosen arguments are:"
+    #       f"window x: {wx}"
+    #       f"window y: {wy}"
+    #       f"classifier: {classifier}")
+    # time_series_df = data_formatting_for_model.create_data_frame_for_model(
+    #     df_merged,
+    #     window_size_x=wx,
+    #     window_size_y=wy,
+    #     target_label_column_name="disrupt")
+
+    for wx in [3, 4, 5, 6, 10, 14]:
+        for wy in [1, 2, 3, 7]:
+            t = time.time()
+            print(f"creating time series: x:{wx}, y:{wy}")
+            time_series_df = data_formatting_for_model.create_data_frame_for_model(
+                df_merged,
+                window_size_x=wx,
+                window_size_y=wy,
+                target_label_column_name="disrupt")
+            time_series_df.to_csv(rf"{prog_dir}/Data/InjuriesTimeSeries_x{wx}_y{wy}.csv", index=False)
+            print(f"created x:{wx}, y:{wy} in time {time.time() - t}")
+
+    # dtc = create_model(time_series_df, classifier=classifier)
