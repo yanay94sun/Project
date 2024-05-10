@@ -73,20 +73,6 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-f",
-        default=False,
-        type=bool,
-        help="create a time series formatted data from the raw data into a csv"
-    )
-
-    parser.add_argument(
-        "-i",
-        default=True,
-        type=bool,
-        help=""
-    )
-
-    parser.add_argument(
         "-wx",
         default=3,
         type=int,
