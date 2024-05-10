@@ -73,6 +73,20 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "-f",
+        default=False,
+        type=bool,
+        help="create a time series formatted data from the raw data into a csv"
+    )
+
+    parser.add_argument(
+        "-i",
+        default=True,
+        type=bool,
+        help=""
+    )
+
+    parser.add_argument(
         "-wx",
         default=3,
         type=int,
@@ -103,19 +117,19 @@ if __name__ == '__main__':
     df2 = load_data(rf"{prog_dir}/Data/Cleaned_riderIllnesses.csv")
     df_merged = adding_labels.merge_selected_columns_from_dfs(df1, df2, ["disrupt"])
     args = parse_args()
-    # print(args)
+    print(args)
     wx = args.wx
     wy = args.wy
     classifier = args.c
-    # print(f"chosen arguments are:"
-    #       f"window x: {wx}"
-    #       f"window y: {wy}"
-    #       f"classifier: {classifier}")
-    # time_series_df = data_formatting_for_model.create_data_frame_for_model(
-    #     df_merged,
-    #     window_size_x=wx,
-    #     window_size_y=wy,
-    #     target_label_column_name="disrupt")
+    print(f"chosen arguments are:"
+          f"window x: {wx}"
+          f"window y: {wy}"
+          f"classifier: {classifier}")
+    time_series_df = data_formatting_for_model.create_data_frame_for_model(
+        df_merged,
+        window_size_x=wx,
+        window_size_y=wy,
+        target_label_column_name="disrupt")
 
     for wx in [14]:
         for wy in [1, 2, 3, 7]:
