@@ -1,4 +1,6 @@
 """This module is responsible to prepare the aggregated data"""
+from __future__ import annotations
+
 from typing import List
 import numpy as np
 import pandas as pd

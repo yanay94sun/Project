@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
+from matplotlib import pyplot as plt
 from sklearn.tree import DecisionTreeClassifier  # Import Decision Tree Classifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import train_test_split  # Import train_test_split function
@@ -112,4 +116,48 @@ if __name__ == '__main__':
         window_size_x=wx,
         window_size_y=wy,
         target_label_column_name="disrupt")
-    dtc = create_model(time_series_df, classifier=classifier)
+
+    for wx in [14]:
+        for wy in [1, 2, 3, 7]:
+            t = time.time()
+            print(f"creating time series: x:{wx}, y:{wy}")
+            time_series_df = data_formatting_for_model.create_data_frame_for_model(
+                df_merged,
+                window_size_x=wx,
+                window_size_y=wy,
+                target_label_column_name="disrupt")
+            time_series_df.to_csv(rf"{prog_dir}/Data/TimeSeries_x{wx}_y{wy}.csv", index=False)
+            print(f"created x:{wx}, y:{wy} in time {time.time() - t}")
+#
+#     # dtc = create_model(time_series_df, classifier=classifier)
+# def plot_for_all_time_interval():
+#     width = 0.14
+#     fig, ax = plt.subplots(figsize=(18, 10))
+#
+#     def add_labels_on_bars(x,y):
+#         y_text = [f"{val:.1%}" for val in y]
+#         y_place = [val*0.5 for val in y]
+#         for i in range(len(x)):
+#             ax.text(x[i], y_place[i], y_text[i], ha='center', rotation='vertical', fontsize=6)
+#
+#     rel_cols = list(filter(lambda col: col[:10] == "Percentage", aggregated_df.columns))
+#     rel_cols.sort()
+#     x_locations = []
+#     last_left_pos = - width * ((len(rel_cols) - 1) / 2)
+#     for i, col in enumerate(rel_cols):
+#         x_locations.append([x + last_left_pos for x in range(len(aggregated_df))])
+#         last_left_pos += width
+#
+#         ax.bar(x_locations[i], list(aggregated_df[col]), width, label=col[10:])
+#         add_labels_on_bars(x_locations[i], list(aggregated_df[col]))
+#
+#     labels = [x[:4] for x in list(aggregated_df.index)]
+#     labels = [f"{str(x)[2:]}-{str(int(x) + interval_size)[2:]}" for x in labels]
+#
+#     ax.set_xticks(range(len(aggregated_df)), labels=labels, fontsize=8)
+#     plt.xlabel('years', fontsize=10)
+#     plt.ylabel('CARG%', fontsize=10)
+#     plt.title(title)
+#     plt.grid(color = 'green', linestyle = '--', linewidth = 0.1)
+#     ax.legend()
+#     plt.show()
