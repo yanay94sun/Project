@@ -1,24 +1,19 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
+from Baseline.build_model import train_model, get_unique_cyclist_ids, predict_cyclist_injury_probability
 
 app = Flask(__name__)
 CORS(app)
 
-# Sample cyclist IDs
-cyclist_ids = [1, 2, 3, 4, 5]
-
-# Simulating the model with a dummy function
-def get_injury_probabilities(cyclist_id):
-    import numpy as np
-    np.random.seed(cyclist_id)  # For reproducibility
-    return [random.random() for _ in range(10)] # List of 30 probabilities
+model = train_model()
+cyclist_ids = get_unique_cyclist_ids()
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
     cyclist_id = data['cyclist_id']
-    probabilities = get_injury_probabilities(cyclist_id)
+    probabilities = predict_cyclist_injury_probability(cyclist_id)
     return jsonify(probabilities)
 
 @app.route('/cyclists', methods=['GET'])
