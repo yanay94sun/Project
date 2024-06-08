@@ -1,8 +1,0 @@
-# Ignore compiled Python files
-*.pyc
-
-# Ignore virtual environment directories
-.venv/
-
-# Ignore data files
-Data/
