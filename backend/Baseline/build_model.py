@@ -12,6 +12,8 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
+import math
+
 
 seed = 42
 
@@ -169,18 +171,20 @@ def get_train_and_test(prepared_data, window_size_past, window_size_future):
     return X_train, X_test, y_train, y_test
 
 
-df1 = load_data(rf"Data\Cleaned_Agg_Workouts_2023.csv")
-df2 = load_data(rf"Data\Cleaned_riderInjuries.csv")
+df1 = load_data(rf"Data/Cleaned_Agg_Workouts_2023.csv")
+df2 = load_data(rf"Data/Cleaned_riderInjuries.csv")
 df_merged = merge_selected_columns_from_dfs(df1, df2, ["disrupt", "score"])
-classifier = DecisionTreeClassifier(max_depth=3, min_samples_split=2, min_samples_leaf=1)
+classifier = XGBClassifier(max_depth=3, n_estimators=200, random_state=seed)
 window_size_past = 30
 window_size_future = 7
 prepared_data = prepare_data(df_merged, window_size_past, window_size_future)
-
+X_train, X_test, y_train, y_test = get_train_and_test(prepared_data, window_size_past, window_size_future)
+thresholds = None
 
 def train_model():
-    X_train, X_test, y_train, y_test = get_train_and_test(prepared_data, window_size_past, window_size_future)
+    global thresholds
     classifier.fit(X_train, y_train)
+    thresholds = get_thresholds()
 
     return classifier
 
@@ -192,16 +196,44 @@ def get_unique_cyclist_ids():
     return df_merged['cyclist_id'].unique().tolist()
 
 
+def get_thresholds():
+    y_test_proba = classifier.predict_proba(X_test)
+    num_labels = y_test.shape[1]
+    best_thresholds = np.zeros(num_labels)
+    for i in range(num_labels):
+        fpr, tpr, thresholds = metrics.roc_curve(y_test.iloc[:, i], y_test_proba[:, i])
+        best_thresholds[i] = thresholds[np.argmax(tpr - fpr)]
+    return best_thresholds
+
 def predict_cyclist_injury_probability(cyclist_id: int):
     """
-    Predict the injury probability for the given cyclist ID, based on the trained model and the recent `window_size_past` data.
+    Predict the injury probability for the given cyclist ID, based on the trained model and the recent window_size_past data.
     """
     # Get the cyclist data for the given cyclist ID
     cyclist_data = prepared_data[prepared_data['cyclist_id'] == cyclist_id]
     # Get the features for the prepared data
     features, _ = filter_relevant_cols_for_model(cyclist_data)
     # Take the last record from the cyclist data to get the most recent data
-    X = cyclist_data[features].iloc[-1:]
+    X = cyclist_data[features].tail(1).values
+    print(X.shape)
     # Predict the injury probability
     injury_probability = classifier.predict_proba(X)
-    return [proba[0][1] for proba in injury_probability]
+    return normalize(injury_probability[0])
+
+
+def normalize(values):
+    max_vals = thresholds * 2
+    normalized = values / max_vals
+    return [float(min(1, x)) for x in normalized]
+
+# def log_normalize(values):
+#     # Apply logarithmic transformation, add a tiny value to avoid log(0)
+#     log_values = [math.log(x + 1e-10) for x in values]
+#
+#     # Find the minimum and maximum of the logarithmic values
+#     min_val = min(log_values)
+#     max_val = max(log_values)
+#
+#     # Normalize the logarithmic values to a range of 0 to 1
+#     normalized_values = [min(1, ((x - min_val) / (max_val - min_val))) for x in log_values]
+#     return normalized_values
