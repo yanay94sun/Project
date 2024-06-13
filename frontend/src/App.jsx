@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ProbabilityChart from './components/ProbabilityChart';
+import FeaturesTable from './components/FeaturesTable';
 import './App.css';
 
 const App = () => {
     const [cyclistIds, setCyclistIds] = useState([]);
     const [selectedCyclistId, setSelectedCyclistId] = useState('');
     const [probabilities, setProbabilities] = useState([]);
+    const [features, setFeatures] = useState({});
+    const [dates, setDates] = useState([]);
 
     useEffect(() => {
         const fetchCyclistIds = async () => {
@@ -24,7 +27,9 @@ const App = () => {
             body: JSON.stringify({ cyclist_id: Number(selectedCyclistId) }),
         });
         const data = await response.json();
-        setProbabilities(data);
+        setProbabilities(data.probabilities);
+        setFeatures(data.features);
+        setDates(data.dates);
     };
 
     return (
@@ -45,7 +50,18 @@ const App = () => {
                 </select>
                 <button type="submit">Get Probabilities</button>
             </form>
-            {probabilities.length > 0 && <ProbabilityChart data={probabilities} />}
+            <div className="container">
+                {probabilities.length > 0 && (
+                    <div className="chart">
+                        <ProbabilityChart data={probabilities} />
+                    </div>
+                )}
+                {Object.keys(features).length > 0 && (
+                    <div className="table">
+                        <FeaturesTable features={features} dates={dates} />
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

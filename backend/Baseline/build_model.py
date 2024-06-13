@@ -226,6 +226,16 @@ def normalize(values):
     normalized = values / max_vals
     return [float(min(1, x)) for x in normalized]
 
+def get_features_for_cyclist(cyclist_id: int):
+    """
+    Retrieve features for the given cyclist ID along with dates.
+    """
+    cyclist_data = df_merged[df_merged['cyclist_id'] == cyclist_id]
+    feature_dict = {col: cyclist_data[col].tolist() for col in cyclist_data.columns if col not in ['cyclist_id']}
+    dates = cyclist_data['date'].tolist()
+    return feature_dict, dates
+
+
 # def log_normalize(values):
 #     # Apply logarithmic transformation, add a tiny value to avoid log(0)
 #     log_values = [math.log(x + 1e-10) for x in values]
