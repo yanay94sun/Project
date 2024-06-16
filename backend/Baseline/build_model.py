@@ -214,11 +214,11 @@ def predict_cyclist_injury_probability(cyclist_id: int):
     # Get the features for the prepared data
     features, _ = filter_relevant_cols_for_model(cyclist_data)
     # Take the last record from the cyclist data to get the most recent data
-    X = cyclist_data[features].tail(1).values
-    print(X.shape)
+    X = cyclist_data[features].tail(1)
+    X_values = cyclist_data[features].tail(1).values
     # Predict the injury probability
-    injury_probability = classifier.predict_proba(X)
-    return normalize(injury_probability[0])
+    injury_probability = classifier.predict_proba(X_values)
+    return normalize(injury_probability[0]), process_X(X)
 
 
 def normalize(values):
@@ -230,10 +230,21 @@ def get_features_for_cyclist(cyclist_id: int):
     """
     Retrieve features for the given cyclist ID along with dates.
     """
-    cyclist_data = df_merged[df_merged['cyclist_id'] == cyclist_id]
-    feature_dict = {col: cyclist_data[col].tolist() for col in cyclist_data.columns if col not in ['cyclist_id']}
+    cyclist_data = df_merged[df_merged['cyclist_id'] == cyclist_id].tail(window_size_past)
+    feature_dict = {col: cyclist_data[col].round(2).tolist() for col in cyclist_data.columns if col not in ['cyclist_id', 'date']}
     dates = cyclist_data['date'].tolist()
     return feature_dict, dates
+
+def process_X(X: pd.DataFrame):
+    d = X.iloc[0].to_dict()
+    merged_cols = df_merged.columns
+    new_dict = {}
+    for col in merged_cols:
+        for key in d:
+            if col in key:
+                new_dict[col] = new_dict.get(col, []) + [round(d[key], 2)]
+
+    return new_dict
 
 
 # def log_normalize(values):

@@ -13,7 +13,7 @@ cyclist_ids = get_unique_cyclist_ids()
 def predict():
     data = request.json
     cyclist_id = data['cyclist_id']
-    probabilities = predict_cyclist_injury_probability(cyclist_id)
+    probabilities, dict_x = predict_cyclist_injury_probability(cyclist_id)
     features, dates = get_features_for_cyclist(cyclist_id)
     return jsonify({"probabilities": probabilities, "features": features, "dates": dates})
 
