@@ -20,10 +20,10 @@ const ProbabilityChart = ({ data }) => {
                 text: 'Probability'
             }
         },
-        series: [{
-            name: 'Probability',
-            data: data
-        }]
+        series: Object.keys(data).map((cyclistId) => ({
+            name: `Cyclist ID ${cyclistId}`,
+            data: data[cyclistId]
+        }))
     };
 
     return <HighchartsReact highcharts={Highcharts} options={options} />;

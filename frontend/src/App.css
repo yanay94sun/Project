@@ -40,3 +40,40 @@
 .read-the-docs {
   color: #888;
 }
+
+.chart, .table, .table-selection {
+  margin: 20px auto;
+  width: 90%;
+}
+
+.selected-cyclists {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.selected-cyclist {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selected-cyclist button {
+  margin-left: 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.selected-cyclist button:hover {
+  background-color: #c82333;
+}
