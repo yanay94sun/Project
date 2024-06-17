@@ -10,6 +10,7 @@ const App = () => {
     const [probabilities, setProbabilities] = useState({});
     const [features, setFeatures] = useState({});
     const [dates, setDates] = useState([]);
+    const [cyclistForTable, setCyclistForTable] = useState('');
 
     useEffect(() => {
         const fetchCyclistIds = async () => {
@@ -31,8 +32,11 @@ const App = () => {
             });
             const data = await response.json();
             setProbabilities((prev) => ({ ...prev, [currentCyclistId]: data.probabilities }));
-            setFeatures(data.features);
-            setDates(data.dates);
+            if (!cyclistForTable) {
+                setFeatures(data.features);
+                setDates(data.dates);
+                setCyclistForTable(currentCyclistId);
+            }
         }
     };
 
@@ -42,10 +46,28 @@ const App = () => {
             const { [id]: _, ...rest } = prev;
             return rest;
         });
+        if (cyclistForTable === id) {
+            setFeatures({});
+            setDates([]);
+            setCyclistForTable('');
+        }
     };
 
     const handleCurrentCyclistChange = (event) => {
         setCurrentCyclistId(event.target.value);
+    };
+
+    const handleCyclistForTableChange = async (event) => {
+        const cyclistId = event.target.value;
+        setCyclistForTable(cyclistId);
+        const response = await fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cyclist_id: Number(cyclistId) }),
+        });
+        const data = await response.json();
+        setFeatures(data.features);
+        setDates(data.dates);
     };
 
     return (
@@ -77,6 +99,22 @@ const App = () => {
             <div className="chart">
                 {Object.keys(probabilities).length > 0 && (
                     <ProbabilityChart data={probabilities} />
+                )}
+            </div>
+            <div className="table-selection">
+                {selectedCyclists.length > 0 && (
+                    <select
+                        value={cyclistForTable}
+                        onChange={handleCyclistForTableChange}
+                        required
+                    >
+                        <option value="" disabled>Select Cyclist for Table</option>
+                        {selectedCyclists.map((id) => (
+                            <option key={id} value={id}>
+                                Cyclist ID {id}
+                            </option>
+                        ))}
+                    </select>
                 )}
             </div>
             <div className="table">

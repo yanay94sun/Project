@@ -41,7 +41,7 @@
   color: #888;
 }
 
-.chart, .table {
+.chart, .table, .table-selection {
   margin: 20px auto;
   width: 90%;
 }
