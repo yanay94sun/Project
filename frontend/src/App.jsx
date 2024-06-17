@@ -50,16 +50,14 @@ const App = () => {
                 </select>
                 <button type="submit">Get Probabilities</button>
             </form>
-            <div className="container">
+            <div className="chart">
                 {probabilities.length > 0 && (
-                    <div className="chart">
-                        <ProbabilityChart data={probabilities} />
-                    </div>
+                    <ProbabilityChart data={probabilities} />
                 )}
+            </div>
+            <div className="table">
                 {Object.keys(features).length > 0 && (
-                    <div className="table">
-                        <FeaturesTable features={features} dates={dates} />
-                    </div>
+                    <FeaturesTable features={features} dates={dates} />
                 )}
             </div>
         </div>

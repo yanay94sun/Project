@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.chart, .table {
+  margin: 20px auto;
+  width: 90%;
+}
