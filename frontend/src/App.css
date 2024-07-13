@@ -77,3 +77,39 @@
 .selected-cyclist button:hover {
   background-color: #c82333;
 }
+.table-container {
+    overflow: auto;
+    max-height: 400px; /* Adjust as needed */
+    max-width: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: #f1f1f1;
+    z-index: 2; /* Ensure it stays above other table content */
+}
+
+td.sticky-col {
+    position: sticky;
+    left: 0;
+    background-color: #f9f9f9;
+    z-index: 1; /* Ensure it stays above other table content */
+}
+
+th.sticky-header.sticky-col {
+    z-index: 3; /* Ensure the top left cell is above other sticky headers and columns */
+    left: 0; /* Ensure the left sticky behavior is applied */
+    background-color: #f1f1f1; /* Ensure it matches the header color */
+}

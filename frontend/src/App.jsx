@@ -98,7 +98,7 @@ const App = () => {
             </div>
             <div className="chart">
                 {Object.keys(probabilities).length > 0 && (
-                    <ProbabilityChart data={probabilities} />
+                    <ProbabilityChart data={probabilities} dates={dates} />
                 )}
             </div>
             <div className="table-selection">
