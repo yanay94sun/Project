@@ -14,7 +14,7 @@ const App = () => {
 
     useEffect(() => {
         const fetchCyclistIds = async () => {
-            const response = await fetch('https://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/cyclists');
+            const response = await fetch('http://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/cyclists');
             const data = await response.json();
             setCyclistIds(data);
         };
@@ -25,7 +25,7 @@ const App = () => {
         event.preventDefault();
         if (!selectedCyclists.includes(currentCyclistId)) {
             setSelectedCyclists([...selectedCyclists, currentCyclistId]);
-            const response = await fetch('https://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/predict', {
+            const response = await fetch('http://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/predict', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cyclist_id: Number(currentCyclistId) }),
@@ -60,7 +60,7 @@ const App = () => {
     const handleCyclistForTableChange = async (event) => {
         const cyclistId = event.target.value;
         setCyclistForTable(cyclistId);
-        const response = await fetch('https://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/predict', {
+        const response = await fetch('http://cyclist-injury-prediction-dc9a079e7f4c.herokuapp.com/predict', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ cyclist_id: Number(cyclistId) }),
