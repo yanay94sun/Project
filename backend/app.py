@@ -1,32 +1,20 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
-import random
-# from Baseline.build_model import train_model, get_unique_cyclist_ids, predict_cyclist_injury_probability, get_features_for_cyclist
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-# model = train_model()
-# cyclist_ids = get_unique_cyclist_ids()
-# predict_cyclist_injury_proba = {}
-# feature_for_cyclist = {}
-# for cyclist_id in cyclist_ids:
-#     predict_cyclist_injury_proba[cyclist_id] = predict_cyclist_injury_probability(cyclist_id)
-#     feature_for_cyclist[cyclist_id] = get_features_for_cyclist(cyclist_id)
-
-
-
-
+# Define the base directory for file paths
+base_dir = os.path.dirname(__file__)
 
 # load the data
-with open('predict_cyclist_injury_proba.json') as f:
+with open(os.path.join(base_dir, 'predict_cyclist_injury_proba.json')) as f:
     predict_cyclist_injury_proba = json.load(f)
 
-with open('feature_for_cyclist.json') as f:
+with open(os.path.join(base_dir, 'feature_for_cyclist.json')) as f:
     feature_for_cyclist = json.load(f)
-
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
